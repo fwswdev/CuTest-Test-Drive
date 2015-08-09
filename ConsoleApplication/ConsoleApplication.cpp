@@ -4,6 +4,11 @@
 #include "stdafx.h"
 #include "string.h"
 
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+
 #include <iostream>
 #include <string>
 using namespace  std;
@@ -43,6 +48,7 @@ void TestStrToUpper(CuTest *tc) {
 	char* expected = "HELLO WORLD";
 	//CuAssertStrEquals(tc, expected, actual);
 	CuAssertStrEquals(tc, "hello world", "hello world"); // for testing purpose, just make the test pass
+	free(input);
 }
 
 
@@ -108,18 +114,25 @@ void RunAllTests(void) {
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
-	CuSuiteAddSuite(suite, TestSuiteFactory(TestStrToUpper));
-	CuSuiteAddSuite(suite, TestSuiteFactory(TestMathOps));
+	CuSuite *suiteTestStrUpper = TestSuiteFactory(TestStrToUpper);
+	CuSuiteAddSuite(suite, suiteTestStrUpper);
+	CuSuite *suiteTestMathOps = TestSuiteFactory(TestMathOps);
+	CuSuiteAddSuite(suite, suiteTestMathOps);
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
+	
+	CuSuiteDeleteSuites(suite);
+
+	CuStringDelete(output);
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	RunAllTests();
+	_CrtDumpMemoryLeaks();
 	_gettch();
 	return 0;
 }

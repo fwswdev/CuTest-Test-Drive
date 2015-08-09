@@ -251,15 +251,31 @@ CuSuite* CuSuiteNew(void)
 
 void CuSuiteDelete(CuSuite *testSuite)
 {
-        unsigned int n;
-        for (n=0; n < MAX_TEST_CASES; n++)
-        {
-                if (testSuite->list[n])
-                {
-                        CuTestDelete(testSuite->list[n]);
-                }
-        }
-        free(testSuite);
+	unsigned int n;
+	for (n = 0; n < MAX_TEST_CASES; n++)
+	{
+		if (testSuite->list[n])
+		{
+			CuTestDelete(testSuite->list[n]);
+		}
+	}
+	free(testSuite);
+}
+
+void CuSuiteDeleteSuites(CuSuite *testSuite)
+{
+	unsigned int n;
+	for (n = 0; n < MAX_TEST_CASES; n++)
+	{
+		if (testSuite->count > 0)
+		{
+			//free(testSuite->cuSuitList[n]);
+			//free(testSuite->cuSuitList[n]);
+			CuSuiteDelete(testSuite->cuSuitList[n]);
+		}
+		testSuite->count--;
+	}
+	free(testSuite);
 
 }
 
@@ -276,7 +292,11 @@ void CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2)
 	for (i = 0 ; i < testSuite2->count ; ++i)
 	{
 		CuTest* testCase = testSuite2->list[i];
-		CuSuiteAdd(testSuite, testCase);
+		//CuSuiteAdd(testSuite, testCase);
+
+		testSuite->list[testSuite->count] = testCase;
+		testSuite->cuSuitList[testSuite->count] = testSuite2;
+		testSuite->count++;
 	}
 }
 
